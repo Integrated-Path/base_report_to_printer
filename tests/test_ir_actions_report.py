@@ -2,9 +2,11 @@
 # Copyright 2016 SYLEAM
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import mock
+from unittest import mock
 
 from odoo.tests.common import TransactionCase
+
+model = "odoo.addons.base.models.ir_actions_report.IrActionsReport"
 
 
 class TestIrActionsReportXml(TransactionCase):
@@ -52,23 +54,23 @@ class TestIrActionsReportXml(TransactionCase):
         return self.env["printing.tray"].create(values)
 
     def test_print_action_for_report_name_gets_report(self):
-        """ It should get report by name """
-        with mock.patch.object(self.Model, "_get_report_from_name") as mk:
+        """It should get report by name"""
+        with mock.patch("%s._get_report_from_name" % model) as mk:
             expect = "test"
             self.Model.print_action_for_report_name(expect)
             mk.assert_called_once_with(expect)
 
     def test_print_action_for_report_name_returns_if_no_report(self):
-        """ It should return empty dict when no matching report """
-        with mock.patch.object(self.Model, "_get_report_from_name") as mk:
+        """It should return empty dict when no matching report"""
+        with mock.patch("%s._get_report_from_name" % model) as mk:
             expect = "test"
             mk.return_value = False
             res = self.Model.print_action_for_report_name(expect)
             self.assertDictEqual({}, res)
 
     def test_print_action_for_report_name_returns_if_report(self):
-        """ It should return correct serializable result for behaviour """
-        with mock.patch.object(self.Model, "_get_report_from_name") as mk:
+        """It should return correct serializable result for behaviour"""
+        with mock.patch("%s._get_report_from_name" % model) as mk:
             res = self.Model.print_action_for_report_name("test")
             behaviour = mk().behaviour()
             expect = {
@@ -78,7 +80,7 @@ class TestIrActionsReportXml(TransactionCase):
             self.assertDictEqual(expect, res, "Expect {}, Got {}".format(expect, res))
 
     def test_behaviour_default_values(self):
-        """ It should return the default action and printer """
+        """It should return the default action and printer"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = False
         self.env.user.printing_printer_id = False
@@ -94,7 +96,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_user_values(self):
-        """ It should return the action and printer from user """
+        """It should return the action and printer from user"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         self.env.user.printing_printer_id = self.new_printer()
@@ -108,7 +110,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_report_values(self):
-        """ It should return the action and printer from report """
+        """It should return the action and printer from report"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         report.property_printing_action_id = self.new_action()
@@ -123,7 +125,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_user_action(self):
-        """ It should return the action and printer from user action"""
+        """It should return the action and printer from user action"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         report.property_printing_action_id.action_type = "user_default"
@@ -133,8 +135,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_printing_action_on_wrong_user(self):
-        """ It should return the action and printer ignoring printing action
-        """
+        """It should return the action and printer ignoring printing action"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         printing_action = self.new_printing_action()
@@ -147,8 +148,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_printing_action_on_wrong_report(self):
-        """ It should return the action and printer ignoring printing action
-        """
+        """It should return the action and printer ignoring printing action"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         printing_action = self.new_printing_action()
@@ -162,8 +162,8 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_printing_action_with_no_printer(self):
-        """ It should return the action from printing action and printer from
-            other
+        """It should return the action from printing action and printer from
+        other
         """
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
@@ -180,7 +180,7 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_printing_action_with_printer(self):
-        """ It should return the action and printer from printing action """
+        """It should return the action and printer from printing action"""
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"
         printing_action = self.new_printing_action()
@@ -196,8 +196,8 @@ class TestIrActionsReportXml(TransactionCase):
         )
 
     def test_behaviour_printing_action_user_defaults(self):
-        """ It should return the action and printer from user with printing
-            action
+        """It should return the action and printer from user with printing
+        action
         """
         report = self.Model.search([], limit=1)
         self.env.user.printing_action = "client"

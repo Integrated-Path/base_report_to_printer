@@ -4,8 +4,6 @@
 from odoo.tests import common
 
 
-@common.at_install(False)
-@common.post_install(True)
 class TestResUsers(common.TransactionCase):
     def setUp(self):
         super(TestResUsers, self).setUp()
@@ -15,13 +13,13 @@ class TestResUsers(common.TransactionCase):
         return self.env["res.users"].create(self.user_vals)
 
     def test_available_action_types_excludes_user_default(self):
-        """ It should not contain `user_default` in avail actions """
+        """It should not contain `user_default` in avail actions"""
         self.user_vals["printing_action"] = "user_default"
         with self.assertRaises(ValueError):
             self.new_record()
 
     def test_available_action_types_includes_something_else(self):
-        """ It should still contain other valid keys """
+        """It should still contain other valid keys"""
         self.user_vals["printing_action"] = "server"
         self.assertTrue(self.new_record())
 
